@@ -114,7 +114,9 @@
             top: 0;
             bottom: 0;
             width: 6px;
-            background: #e0e0e0;
+            /* background: #e0e0e0; */
+            background: white;
+
             z-index: 50;
         }
 
@@ -225,7 +227,7 @@
         }
 
         .message {
-            margin-bottom: 10px;
+            /* margin-bottom: 10px; */
             padding-bottom: 10px;
             border-bottom: 1px dashed #e0e0e0;
             padding: 10px;
@@ -323,7 +325,85 @@
             margin-bottom: 8px;
             padding: 5px;
             border-radius: 3px;
+            flex-wrap: wrap;
+            gap: 8px;
             /* background-color: white; */
+        }
+        .speaker-font-weight-control {
+            display: flex;
+            align-items: center;
+        }
+
+        .speaker-bold-toggle {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .speaker-bold-toggle:hover {
+            background: #e9ecef;
+        }
+
+        .speaker-bold-toggle.active {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+
+        .speaker-bold-checkbox {
+            display: none;
+        }
+
+        .speaker-bold-label {
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .speaker-font-weight-slider {
+            flex: 1;
+            height: 4px;
+            border-radius: 2px;
+            background: #5a6c7d;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .speaker-font-weight-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: 1px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .speaker-font-weight-slider::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: 1px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .speaker-font-weight-value {
+            color: #2c3e50;
+            font-size: 11px;
+            min-width: 25px;
+            text-align: center;
+            font-weight: 500;
         }
 
         .color-picker {
@@ -332,7 +412,65 @@
             border: 1px solid #ccc;
             border-radius: 3px;
             cursor: pointer;
-            margin-left: 8px;
+        }
+
+        .font-weight-control {
+            background-color: #34495e;
+            border: 1px solid #4a5f7a;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .font-weight-control h3 {
+            color: white;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .font-weight-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .font-weight-slider {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #5a6c7d;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .font-weight-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .font-weight-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .font-weight-value {
+            color: white;
+            font-size: 12px;
+            min-width: 30px;
+            text-align: center;
         }
 
         .message-header {
@@ -347,6 +485,8 @@
 
         .message-content {
             white-space: pre-wrap;
+            color: rgb(57, 57, 57);
+            /* font-weight: 600; */
         }
 
         .annotation-panel {
@@ -617,6 +757,7 @@
                 this.speakers = [];
                 this.speakerColorMap = new Map();
                 this.speakerCustomColors = new Map();
+                this.speakerCustomFontWeights = new Map();
                 this.defaultColors = ['#f9f9f9', '#ffffff', '#f0f0f0', '#e8e8e8', '#f5f5f5'];
                 this.isSelecting = false;
                 this.selectionStart = null;
@@ -712,6 +853,32 @@
                         const speaker = event.target.dataset.speaker;
                         const color = event.target.value;
                         this.updateSpeakerColor(speaker, color);
+                    }
+                });
+
+                // Add event listener for per-speaker bold toggle checkboxes
+                document.addEventListener('change', (event) => {
+                    if (event.target.matches('.speaker-bold-checkbox')) {
+                        const speaker = event.target.dataset.speaker;
+                        const isBold = event.target.checked;
+                        const fontWeight = isBold ? 600 : 500;
+                        this.updateSpeakerFontWeight(speaker, fontWeight);
+                    }
+                });
+
+                // Add click event listener for bold toggle labels
+                document.addEventListener('click', (event) => {
+                    const toggle = event.target.closest('.speaker-bold-toggle');
+                    if (toggle) {
+                        event.preventDefault();
+                        const checkbox = toggle.querySelector('.speaker-bold-checkbox');
+                        if (checkbox) {
+                            checkbox.checked = !checkbox.checked;
+                            const speaker = checkbox.dataset.speaker;
+                            const isBold = checkbox.checked;
+                            const fontWeight = isBold ? 600 : 500;
+                            this.updateSpeakerFontWeight(speaker, fontWeight);
+                        }
                     }
                 });
 
@@ -860,12 +1027,13 @@
                 
                 segments.forEach((segment, segmentIndex) => {
                     const segmentColor = this.segmentColors[segmentIndex];
+                    const darkerSegmentColor = this.darkenColor(segmentColor);
                     
                     // Add segment divider (except for first segment)
                     if (segmentIndex > 0) {
                         const divider = document.createElement('div');
                         divider.className = 'segment-divider';
-                        divider.innerHTML = `<div class="segment-title-marker" style="color: ${segmentColor}">${this.escapeHtml(segment.title)}</div>`;
+                        divider.innerHTML = `<div class="segment-title-marker" style="color: ${darkerSegmentColor}">${this.escapeHtml(segment.title)}</div>`;
                         messagesContainer.appendChild(divider);
                     }
                     
@@ -1208,14 +1376,32 @@
                 this.speakers.forEach((speaker, index) => {
                     const defaultColor = this.defaultColors[index % this.defaultColors.length];
                     const currentColor = this.speakerCustomColors.get(speaker) || defaultColor;
+                    const currentFontWeight = this.speakerCustomFontWeights.get(speaker) || 500;
+                    const isBold = currentFontWeight >= 600;
                     
-                    checkboxHtml += `<div class="speaker-control"><div class="filter-checkbox"><input type="checkbox" id="speaker-${this.escapeHtml(speaker)}" checked data-speaker="${this.escapeHtml(speaker)}"><label for="speaker-${this.escapeHtml(speaker)}">${this.escapeHtml(speaker)}</label></div><input type="color" class="color-picker" value="${currentColor}" data-speaker="${this.escapeHtml(speaker)}" title="Change color for ${this.escapeHtml(speaker)}"></div>`;
+                    checkboxHtml += `
+                        <div class="speaker-control">
+                                <div class="filter-checkbox">
+                                    <input type="checkbox" id="speaker-${this.escapeHtml(speaker)}" checked data-speaker="${this.escapeHtml(speaker)}">
+                                    <label for="speaker-${this.escapeHtml(speaker)}">${this.escapeHtml(speaker)}</label>
+                                </div>
+                                <input type="color" class="color-picker" value="${currentColor}" data-speaker="${this.escapeHtml(speaker)}" title="Change color for ${this.escapeHtml(speaker)}">
+                                <div class="speaker-font-weight-control">
+                                    <label class="speaker-bold-toggle ${isBold ? 'active' : ''}" for="bold-${this.escapeHtml(speaker)}">
+                                        <input type="checkbox" class="speaker-bold-checkbox" id="bold-${this.escapeHtml(speaker)}"
+                                            ${isBold ? 'checked' : ''} data-speaker="${this.escapeHtml(speaker)}">
+                                        <span class="speaker-bold-label">Bold</span>
+                                    </label>
+                                </div>
+                        </div>
+                    `;
                 });
                 
                 filterCheckboxes.innerHTML = checkboxHtml;
                 
-                // Apply current colors to messages
+                // Apply current colors and font weights to messages
                 this.applyCustomColors();
+                this.applyCustomFontWeights();
             }
 
             applyCustomColors() {
@@ -1241,6 +1427,36 @@
                 const speakerMessages = document.querySelectorAll(`.message[data-speaker="${speaker}"]`);
                 speakerMessages.forEach(message => {
                     message.style.backgroundColor = color;
+                });
+            }
+
+            updateSpeakerFontWeight(speaker, fontWeight) {
+                this.speakerCustomFontWeights.set(speaker, fontWeight);
+                
+                // Update the toggle visual state
+                const boldToggle = document.querySelector(`label[for="bold-${speaker}"]`);
+                const isBold = fontWeight >= 600;
+                if (boldToggle) {
+                    if (isBold) {
+                        boldToggle.classList.add('active');
+                    } else {
+                        boldToggle.classList.remove('active');
+                    }
+                }
+                
+                // Update all message content elements for this speaker
+                const speakerMessages = document.querySelectorAll(`.message[data-speaker="${speaker}"] .message-content`);
+                speakerMessages.forEach(content => {
+                    content.style.fontWeight = fontWeight;
+                });
+            }
+
+            applyCustomFontWeights() {
+                this.speakerCustomFontWeights.forEach((fontWeight, speaker) => {
+                    const speakerMessages = document.querySelectorAll(`.message[data-speaker="${speaker}"] .message-content`);
+                    speakerMessages.forEach(content => {
+                        content.style.fontWeight = fontWeight;
+                    });
                 });
             }
 
@@ -1510,6 +1726,30 @@
                 const div = document.createElement('div');
                 div.textContent = text;
                 return div.innerHTML;
+            }
+
+            darkenColor(color, factor = 0.7) {
+                // Convert hex color to RGB
+                let hex = color.replace('#', '');
+                
+                // Handle 3-character hex codes
+                if (hex.length === 3) {
+                    hex = hex.split('').map(char => char + char).join('');
+                }
+                
+                // Parse RGB values
+                const r = parseInt(hex.substr(0, 2), 16);
+                const g = parseInt(hex.substr(2, 2), 16);
+                const b = parseInt(hex.substr(4, 2), 16);
+                
+                // Darken by multiplying by factor
+                const darkR = Math.round(r * factor);
+                const darkG = Math.round(g * factor);
+                const darkB = Math.round(b * factor);
+                
+                // Convert back to hex
+                const toHex = (val) => val.toString(16).padStart(2, '0');
+                return `#${toHex(darkR)}${toHex(darkG)}${toHex(darkB)}`;
             }
 
             highlightAnnotationMessages(messageIndices) {
