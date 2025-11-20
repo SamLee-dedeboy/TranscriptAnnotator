@@ -131,7 +131,7 @@ async def get_transcripts():
                     "modified": file_path.stat().st_mtime,
                 }
             )
-        return {"transcripts": transcript_files}
+        return transcript_files
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error reading transcripts: {str(e)}"
@@ -237,7 +237,7 @@ async def get_segmented_transcript(transcript_name: str):
         )
 
 
-@app.get("/api/annotations/{transcript_name}")
+@app.get("/api/annotations/get/{transcript_name}")
 async def get_annotations(transcript_name: str):
     """Get annotations for a specific transcript"""
     try:
@@ -265,7 +265,7 @@ async def get_annotations(transcript_name: str):
         )
 
 
-@app.post("/api/annotations/{transcript_name}")
+@app.post("/api/annotations/save/{transcript_name}")
 async def save_annotations(transcript_name: str, annotation_data: AnnotationFile):
     """Save annotations for a specific transcript"""
     try:

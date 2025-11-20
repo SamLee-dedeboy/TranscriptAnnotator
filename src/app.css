@@ -1,0 +1,44 @@
+/* Global styles for the Transcript Annotator */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body, #app {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: monospace, sans-serif;
+    background-color: #f5f5f5;
+}
+
+/* Speaker color variables */
+:root {
+    --speaker-color-0: #f9f9f9;
+    --speaker-color-1: #ffffff;
+    --speaker-color-2: #f0f0f0;
+    --speaker-color-3: #e8e8e8;
+    --speaker-color-4: #f5f5f5;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

@@ -15,5 +15,6 @@
     "files.exclude": {
         "**/__pycache__": true,
         "**/*.pyc": true
-    }
+    },
+    "recommendations": ["svelte.svelte-vscode"]
 }
