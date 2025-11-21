@@ -43,7 +43,8 @@
   let annotationLabel = $state("");
   let annotationDescription = $state("");
   let startSelectionIndex = $state<number | null>(null);
-  let messagesContainer = $state<HTMLElement | undefined>(undefined);
+  //   let messagesContainer = $state<HTMLElement | undefined>(undefined);
+  let transcriptContent = $state<HTMLElement | undefined>(undefined);
   let annotationFormTop = $state(0);
   let positionedAnnotations = $state<
     Array<
@@ -175,7 +176,7 @@
 
   // Effect to reposition annotations when scrolling
   $effect(() => {
-    if (!messagesContainer) return;
+    if (!transcriptContent) return;
 
     const handleScroll = () => {
       if (annotations.length > 0) {
@@ -183,11 +184,11 @@
       }
     };
 
-    messagesContainer.addEventListener("scroll", handleScroll);
+    transcriptContent.addEventListener("scroll", handleScroll);
     window.addEventListener("resize", handleScroll);
 
     return () => {
-      messagesContainer?.removeEventListener("scroll", handleScroll);
+      transcriptContent?.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
     };
   });
@@ -366,7 +367,6 @@
 
   // Segment Navigation Functions
   function scrollToSegment(segmentIndex: number) {
-    const transcriptContent = document.querySelector(".transcript-content");
     if (!transcriptContent) return;
 
     const messageGroup = transcriptContent.querySelector(
@@ -384,23 +384,25 @@
   }
 
   function updateActiveSegment() {
-    if (!currentTranscript || !messagesContainer) return;
-
-    const viewportTop = messagesContainer.scrollTop;
-    const viewportBottom = viewportTop + messagesContainer.clientHeight;
+    if (!currentTranscript || !transcriptContent) return;
 
     let maxVisibleArea = 0;
-    let newActiveIndex = 0;
 
     currentTranscript.segments.forEach((segment, index) => {
-      const messageGroup = messagesContainer!.querySelector(
-        `[data-segment-index="${index}"]`
+      const messageGroup = transcriptContent!.querySelector(
+        `.message-group[data-segment-index="${index}"]`
       ) as HTMLElement;
-      if (messageGroup) {
+      if (messageGroup && transcriptContent) {
+        // Calculate positions relative to the scroll container
         const groupTop = messageGroup.offsetTop;
         const groupBottom = groupTop + messageGroup.offsetHeight;
 
-        // Calculate visible area of this segment
+        // Calculate the currently visible viewport area within the scroll container
+        const viewportTop = transcriptContent.scrollTop;
+        const viewportBottom =
+          transcriptContent.scrollTop + transcriptContent.clientHeight;
+
+        // Only calculate visible area if the group intersects with the visible viewport
         let visibleArea = 0;
         if (groupBottom > viewportTop && groupTop < viewportBottom) {
           const visibleTop = Math.max(groupTop, viewportTop);
@@ -410,26 +412,25 @@
 
         if (visibleArea > maxVisibleArea) {
           maxVisibleArea = visibleArea;
-          newActiveIndex = index;
+          activeSegmentIndex = index;
         }
       }
     });
-
-    activeSegmentIndex = newActiveIndex;
   }
 
   // Effect to set up scroll listener
   $effect(() => {
-    if (!messagesContainer) return;
+    const transcriptContent = document.querySelector(".transcript-content");
+    if (!transcriptContent) return;
 
     const handleScroll = () => {
       updateActiveSegment();
     };
 
-    messagesContainer.addEventListener("scroll", handleScroll);
+    transcriptContent.addEventListener("scroll", handleScroll);
 
     return () => {
-      messagesContainer?.removeEventListener("scroll", handleScroll);
+      transcriptContent?.removeEventListener("scroll", handleScroll);
     };
   });
 
@@ -450,20 +451,20 @@
   }
 
   function updateSegmentPositions() {
-    if (!currentTranscript || !messagesContainer) {
+    if (!currentTranscript || !transcriptContent) {
       segmentPositions = [];
       return;
     }
 
-    const totalHeight = messagesContainer.scrollHeight;
+    const totalHeight = transcriptContent.scrollHeight;
     if (totalHeight === 0) {
       segmentPositions = [];
       return;
     }
 
     const newPositions = currentTranscript.segments.map((_, segmentIndex) => {
-      const messageGroup = messagesContainer!.querySelector(
-        `[data-segment-index="${segmentIndex}"]`
+      const messageGroup = transcriptContent!.querySelector(
+        `.message-group[data-segment-index="${segmentIndex}"]`
       ) as HTMLElement;
       if (!messageGroup) return { top: 0, height: 0 };
 
@@ -486,7 +487,7 @@
 
   // Effect to update segment positions when content changes
   $effect(() => {
-    if (currentTranscript && messagesContainer) {
+    if (currentTranscript && transcriptContent) {
       // Use setTimeout to ensure DOM is updated
       setTimeout(() => {
         updateSegmentPositions();
@@ -512,7 +513,7 @@
   />
 
   {#if currentTranscript}
-    <div class="transcript-content">
+    <div class="transcript-content" bind:this={transcriptContent}>
       <!-- Messages Panel -->
       <div class="messages-panel">
         <!-- Segment Visual Bar -->
@@ -535,7 +536,6 @@
         <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
         <div
           class="messages-container"
-          bind:this={messagesContainer}
           onmousedown={handleMouseDown}
           onmousemove={handleMouseMove}
           onmouseup={handleMouseUp}
