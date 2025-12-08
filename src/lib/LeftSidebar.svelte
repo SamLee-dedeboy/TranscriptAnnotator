@@ -48,7 +48,7 @@
   }
 
   .left-sidebar {
-    width: 250px;
+    width: 400px;
     border-right: 2px solid #34495e;
     position: relative;
   }

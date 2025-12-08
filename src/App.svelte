@@ -26,6 +26,7 @@
       }
 
       const transcriptList = await response.json();
+      console.log("transcript list:", transcriptList);
       transcripts = [];
 
       for (const transcriptInfo of transcriptList) {

@@ -123,14 +123,15 @@ async def get_transcripts():
     """Get list of available transcript files"""
     try:
         transcript_files = []
-        for file_path in TRANSCRIPTS_DIR.glob("*.txt"):
-            transcript_files.append(
-                {
-                    "filename": file_path.name,
-                    "size": file_path.stat().st_size,
-                    "modified": file_path.stat().st_mtime,
-                }
-            )
+        for folder_path in SEGMENTED_DIR.glob("*/"):
+            if folder_path.is_dir():
+                transcript_files.append(
+                    {
+                        "filename": folder_path.name,
+                        "size": folder_path.stat().st_size,
+                        "modified": folder_path.stat().st_mtime,
+                    }
+                )
         return transcript_files
     except Exception as e:
         raise HTTPException(
@@ -187,8 +188,8 @@ async def get_segmented_transcript(transcript_name: str):
     """Get segmented transcript content as an array of segments"""
     try:
         # Remove .txt extension from filename to get the base name
-        base_name = transcript_name.replace(".txt", "")
-        segment_dir = SEGMENTED_DIR / base_name
+        # base_name = transcript_name.replace(".txt", "")
+        segment_dir = SEGMENTED_DIR / transcript_name
 
         if not segment_dir.exists():
             raise HTTPException(
@@ -196,7 +197,7 @@ async def get_segmented_transcript(transcript_name: str):
             )
 
         # Find all segment files in the directory
-        segment_files = sorted(segment_dir.glob(f"{base_name}_*.json"))
+        segment_files = sorted(segment_dir.glob(f"*.json"))
 
         if not segment_files:
             raise HTTPException(status_code=404, detail="No segment files found")
