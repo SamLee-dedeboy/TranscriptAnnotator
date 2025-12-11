@@ -243,7 +243,7 @@ async def get_annotations(transcript_name: str):
     """Get annotations for a specific transcript"""
     try:
         # Convert transcript filename to annotation filename
-        annotation_filename = transcript_name.replace(".txt", ".json")
+        annotation_filename = transcript_name + ".json"
         file_path = ANNOTATIONS_DIR / annotation_filename
 
         if not file_path.exists():
@@ -271,7 +271,7 @@ async def save_annotations(transcript_name: str, annotation_data: AnnotationFile
     """Save annotations for a specific transcript"""
     try:
         # Convert transcript filename to annotation filename
-        annotation_filename = transcript_name.replace(".txt", ".json")
+        annotation_filename = transcript_name + ".json"
         file_path = ANNOTATIONS_DIR / annotation_filename
 
         # Ensure the annotation data has the correct transcript file name
@@ -296,7 +296,7 @@ async def save_annotations(transcript_name: str, annotation_data: AnnotationFile
 async def delete_annotations(transcript_name: str):
     """Delete annotations for a specific transcript"""
     try:
-        annotation_filename = transcript_name.replace(".txt", ".json")
+        annotation_filename = transcript_name + ".json"
         file_path = ANNOTATIONS_DIR / annotation_filename
 
         if file_path.exists():
@@ -314,7 +314,7 @@ async def delete_annotations(transcript_name: str):
 async def delete_annotation_by_id(transcript_name: str, annotation_id: int):
     """Delete a specific annotation by ID"""
     try:
-        annotation_filename = transcript_name.replace(".txt", ".json")
+        annotation_filename = transcript_name + ".json"
         file_path = ANNOTATIONS_DIR / annotation_filename
 
         if not file_path.exists():
