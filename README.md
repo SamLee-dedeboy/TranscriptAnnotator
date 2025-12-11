@@ -4,17 +4,14 @@ A lightweight fullstack application for annotating transcripts.
 ## Quick Start
 
 ### Prerequisites
-
-- [List required software versions]
-- Node.js [version]
-- Python [version]
-- [Other dependencies]
+- Node.js
+- Python
 
 ### Installation
 
 1. Clone the repository:
    ```bash
-   git clone [repository-url]
+   git clone https://github.com/SamLee-dedeboy/TranscriptAnnotator.git 
    cd TranscriptAnnotator
    ```
 
