@@ -19,7 +19,7 @@
 <div class="left-sidebar sidebar">
   <h2>Transcripts</h2>
   <ul class="transcript-list">
-    {#each transcripts as transcript}
+    {#each [...transcripts].sort( (a, b) => a.filename.localeCompare(b.filename) ) as transcript}
       <li
         class="transcript-item"
         class:active={selectedTranscript === transcript.filename}

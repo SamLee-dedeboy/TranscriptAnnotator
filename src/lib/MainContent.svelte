@@ -543,7 +543,7 @@
           aria-label="Transcript messages - click and drag to select text for annotation"
         >
           {#each currentTranscript.segments as segment, segmentIndex}
-            {#if segmentIndex > 0}
+            {#if segmentIndex >= 0}
               <div class="segment-divider">
                 <div class="segment-title-marker">{segment.title}</div>
               </div>
@@ -708,6 +708,7 @@
     user-select: none;
     /* overflow-y: auto; */
     padding-right: 12px;
+    padding-left: 12px;
   }
 
   .message-group {
