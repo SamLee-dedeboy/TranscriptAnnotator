@@ -242,11 +242,11 @@
 >
   <div class="card-header">
     {#if isEditing}
-      <input
-        type="text"
+      <textarea
         bind:value={editLabel}
         placeholder="Label"
         class="edit-input"
+        rows="1"
       />
       <div class="button-group">
         <button
@@ -669,17 +669,21 @@
   .edit-input,
   .edit-textarea {
     width: 100%;
+    max-width: 100%;
     padding: 6px;
     margin: 0;
     border: 1px solid #ccc;
     border-radius: 3px;
     font-size: 0.8rem;
     font-family: inherit;
-    resize: none;
+    /* resize: none; */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    white-space: pre-wrap;
   }
 
   .edit-input {
-    height: 2rem;
+    min-height: 5rem;
   }
 
   .edit-textarea {
